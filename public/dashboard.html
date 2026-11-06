@@ -1,0 +1,2806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Ossmo AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Default Crisp White & Black Theme + Dark Mode Support */
+    :root {
+      --bg-app: #ffffff;
+      --bg-sidebar: #f8f8f9;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f3f3f5;
+      --bg-hover: #ededf0;
+      --bg-user-bubble: #efeff1;
+      --text-user-bubble: #0f0f10;
+      --text-primary: #0f0f10;
+      --text-secondary: #52525b;
+      --text-muted: #8e8e96;
+      --border: #e5e5ea;
+      --border-strong: #d1d1d6;
+      --accent: #0f0f10;
+      --accent-inv: #ffffff;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-input: 0 8px 30px rgba(0, 0, 0, 0.06);
+      --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      color-scheme: light;
+
+      /* Category icon colours - light mode (darker shades so they stay visible on white) */
+      --cat-food: #ea580c;
+      --cat-groceries: #16a34a;
+      --cat-transport: #2563eb;
+      --cat-bills: #9333ea;
+      --cat-shopping: #db2777;
+      --cat-rent: #0d9488;
+      --cat-entertainment: #d97706;
+      --cat-investments: #4f46e5;
+      --cat-other: #64748b;
+    }
+
+    body.dark-theme {
+      --bg-app: #131314;
+      --bg-sidebar: #0c0c0d;
+      --bg-surface: #1c1c1e;
+      --bg-subtle: #232326;
+      --bg-hover: #27272a;
+      --bg-user-bubble: #2a2a2e;
+      --text-user-bubble: #f4f4f5;
+      --text-primary: #f4f4f5;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --border: #262629;
+      --border-strong: #3f3f46;
+      --accent: #ffffff;
+      --accent-inv: #0f0f10;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-input: 0 10px 35px rgba(0, 0, 0, 0.45);
+      color-scheme: dark;
+
+      /* Category icon colours - dark mode (lighter shades so they stay visible on dark) */
+      --cat-food: #fb923c;
+      --cat-groceries: #4ade80;
+      --cat-transport: #60a5fa;
+      --cat-bills: #c084fc;
+      --cat-shopping: #f472b6;
+      --cat-rent: #2dd4bf;
+      --cat-entertainment: #fbbf24;
+      --cat-investments: #818cf8;
+      --cat-other: #94a3b8;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* ==========================================
+       LEFT SIDEBAR (ChatGPT / Claude / Fiesta Style)
+       ========================================== */
+    .sidebar {
+      width: 260px;
+      min-width: 260px;
+      height: 100vh;
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 14px 12px;
+      transition: var(--transition);
+      z-index: 20;
+    }
+
+    .sidebar.collapsed {
+      margin-left: -260px;
+    }
+
+    .sidebar-top {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow: hidden;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* Brand Header Row with logo.svg */
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 6px;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .brand-logo-img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand-fallback {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--accent);
+      color: var(--accent-inv);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .header-icon-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .icon-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    /* Primary Sidebar Navigation Items */
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .nav-item {
+      width: 100%;
+      padding: 9px 10px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: left;
+    }
+
+    .nav-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-item svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 1.9;
+      flex-shrink: 0;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .nav-badge {
+      font-size: 10.5px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* Recent Chats History */
+    .history-section {
+      margin-top: 8px;
+      overflow-y: auto;
+      padding-right: 2px;
+      flex: 1;
+      min-height: 0;
+      scrollbar-width: thin;
+    }
+
+    .history-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 6px 10px 4px;
+      letter-spacing: 0.02em;
+    }
+
+    .history-item {
+      position: relative;
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 9px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .history-title {
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #chatHistoryList {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .history-item:hover,
+    .history-item.menu-open {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    .history-item.active {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .history-more {
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: 6px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .history-more:hover { color: var(--text-primary); }
+
+    .history-item:hover .history-more,
+    .history-item.menu-open .history-more {
+      display: inline-flex;
+    }
+
+    .history-item.renaming .history-more { display: none !important; }
+
+    .history-rename {
+      flex: 1;
+      min-width: 0;
+      height: 24px;
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      padding: 0 7px;
+      outline: none;
+    }
+
+        /* Bottom Sidebar Card (Budget Status + User Profile) */
+    .sidebar-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .budget-widget {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .budget-widget-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .budget-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .budget-bar {
+      width: 100%;
+      height: 5px;
+      background: var(--bg-subtle);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .budget-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.35s ease;
+    }
+
+    .quick-exp-btn {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--accent);
+      color: var(--accent-inv);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .quick-exp-btn:hover {
+      opacity: 0.9;
+    }
+
+    .user-profile-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .user-profile-bar:hover {
+      background: var(--bg-hover);
+    }
+
+    .user-info-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      overflow: hidden;
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--accent-inv);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .user-meta {
+      overflow: hidden;
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-role {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ==========================================
+       MAIN WORKSPACE AREA
+       ========================================== */
+    .main-area {
+      flex: 1;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg-app);
+    }
+
+    /* Top Minimal Bar */
+    .topbar {
+      height: 54px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid transparent;
+      flex-shrink: 0;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .view-pill-switch {
+      display: inline-flex;
+      background: var(--bg-subtle);
+      padding: 3px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+    }
+
+    .view-pill {
+      padding: 5px 13px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .view-pill.active {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pill-action-btn {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .pill-action-btn:hover {
+      background: var(--bg-subtle);
+    }
+
+    /* Views Container */
+    .workspace-view {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .workspace-view.active {
+      display: flex;
+    }
+
+    /* ==========================================
+       VIEW 1: AI CHAT INTERFACE
+       ========================================== */
+    .chat-scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 20px 140px;
+    }
+
+    .chat-thread {
+      max-width: 740px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+
+    /* User Message Bubble (Right Aligned Pill) */
+    .msg-user-row {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .msg-user-bubble {
+      background: var(--bg-user-bubble);
+      color: var(--text-user-bubble);
+      padding: 9px 14px;
+      border-radius: 14px;
+      max-width: 78%;
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* AI Message Block (Left Aligned with Model Badge & Action Icons) */
+    .msg-ai-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ai-model-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .ai-spark-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+    }
+
+    .msg-ai-content {
+      font-size: 14.5px;
+      line-height: 1.68;
+      color: var(--text-primary);
+    }
+
+    .msg-ai-content p {
+      margin-bottom: 10px;
+    }
+
+    .msg-ai-content ul {
+      margin: 6px 0 12px 20px;
+    }
+
+    .msg-ai-content li {
+      margin-bottom: 5px;
+    }
+
+    .msg-ai-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .msg-action-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .msg-action-icon:hover {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    /* Quick Prompt Starter Chips */
+    .prompt-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .prompt-chip {
+      padding: 7px 13px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .prompt-chip:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+    }
+
+    /* Bottom Floating Pill Input Bar */
+    .chat-composer-wrap {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 20px 18px;
+      background: linear-gradient(180deg, transparent 0%, var(--bg-app) 35%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .chat-composer {
+      width: 100%;
+      max-width: 740px;
+      min-height: 56px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 28px;
+      padding: 8px 10px 8px 12px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      grid-template-areas: "plus input actions";
+      align-items: center;
+      column-gap: 8px;
+      row-gap: 4px;
+      box-shadow: var(--shadow-input);
+    }
+
+    .chat-composer.multiline {
+      grid-template-areas: "input input input" "plus . actions";
+      padding: 14px 10px 8px 14px;
+      align-items: end;
+    }
+
+    .composer-plus-btn {
+      grid-area: plus;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .composer-plus-btn:hover {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    .composer-input {
+      grid-area: input;
+      display: block;
+      width: 100%;
+      height: 22px;
+      max-height: 160px;
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 14.5px;
+      line-height: 22px;
+      padding: 0 4px;
+      resize: none;
+      overflow-y: auto;
+      outline: none;
+    }
+
+    .composer-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .composer-actions {
+      grid-area: actions;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .mode-wrap { position: relative; }
+
+    .composer-mode-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .composer-mode-btn svg { color: var(--text-muted); }
+
+    .mode-menu {
+      position: absolute;
+      bottom: calc(100% + 10px);
+      right: 0;
+      min-width: 150px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 5px;
+      box-shadow: var(--shadow-input);
+      display: none;
+      z-index: 40;
+    }
+
+    .mode-menu.open { display: block; }
+
+    .mode-menu button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .mode-menu button:hover { background: var(--bg-subtle); }
+
+    .composer-icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .composer-icon-btn:hover {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    .composer-icon-btn.listening {
+      color: var(--danger);
+      animation: micPulse 1.1s ease-in-out infinite;
+    }
+
+    @keyframes micPulse {
+      0%, 100% { background: transparent; }
+      50% { background: rgba(220, 38, 38, 0.12); }
+    }
+
+    .composer-send-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: var(--accent-inv);
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .chat-composer.has-text .composer-send-btn { display: flex; }
+
+    .composer-send-btn:hover { opacity: 0.85; }
+
+    /* ==========================================
+       VIEW 2: ANALYSIS & MONTHLY EXPENSE TABLE
+       ========================================== */
+    .analysis-scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 32px 60px;
+    }
+
+    .analysis-container {
+      max-width: 1020px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .analysis-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .analysis-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+    }
+
+    .analysis-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .analysis-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Summary KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .kpi-val {
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .kpi-note {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Manual Quick Add Row Form */
+    .add-expense-bar {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 140px 1.6fr 150px 130px 130px auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .table-input,
+    .table-select {
+      width: 100%;
+      height: 36px;
+      padding: 0 11px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .table-input:focus,
+    .table-select:focus {
+      border-color: var(--text-primary);
+    }
+
+    .btn-pill-black {
+      height: 36px;
+      padding: 0 18px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: var(--accent-inv);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    .btn-pill-black:hover {
+      opacity: 0.88;
+    }
+
+    .btn-pill-outline {
+      height: 36px;
+      padding: 0 15px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .btn-pill-outline.edit-active {
+      background: var(--accent);
+      color: var(--accent-inv);
+      border-color: var(--accent);
+    }
+
+    /* Monthly Ledger Table */
+    .table-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .table-toolbar {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .table-toolbar-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .edit-mode-hint {
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+    }
+
+    .expense-table-wrap {
+      overflow-x: auto;
+    }
+
+    table.expense-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13.5px;
+    }
+
+    table.expense-table th {
+      padding: 11px 16px;
+      font-size: 11.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border);
+    }
+
+    table.expense-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+
+    table.expense-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.expense-table tbody tr:hover {
+      background: var(--bg-subtle);
+    }
+
+    .cat-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+    }
+
+    .editable-cell {
+      padding: 4px 7px;
+      border-radius: 6px;
+      border: 1px dashed transparent;
+      transition: var(--transition);
+    }
+
+    .edit-mode-on .editable-cell {
+      border-color: var(--border-strong);
+      background: var(--bg-subtle);
+      cursor: text;
+    }
+
+    .edit-mode-on .editable-cell:focus {
+      outline: none;
+      border-style: solid;
+      border-color: var(--text-primary);
+      background: var(--bg-surface);
+    }
+
+    .row-delete-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      transition: var(--transition);
+    }
+
+    .row-delete-btn:hover {
+      color: var(--danger);
+      background: rgba(220, 38, 38, 0.08);
+    }
+
+    /* ==========================================
+       SEARCH MODAL (Sidebar Search / Ctrl+K)
+       ========================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 12vh;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .search-modal {
+      width: 100%;
+      max-width: 520px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      box-shadow: var(--shadow-input);
+      overflow: hidden;
+    }
+
+    .search-modal-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-modal-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 14.5px;
+      outline: none;
+    }
+
+    .search-results-list {
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 8px;
+    }
+
+    .search-result-item {
+      padding: 10px 12px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .search-result-item:hover {
+      background: var(--bg-subtle);
+    }
+
+    /* ==========================================
+       NEW CHAT BUTTON, TOPBAR, RECENTS MENU
+       ========================================== */
+    .nav-item.new-chat-btn {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      font-weight: 600;
+      border-radius: 10px;
+    }
+
+    .nav-item.new-chat-btn:hover { background: var(--border); }
+
+    .plus-circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1.6px solid currentColor;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .nav-item .plus-circle svg {
+      width: 11px;
+      height: 11px;
+      stroke-width: 2.6;
+    }
+
+    .topbar { height: 48px; }
+
+    .topbar-open { display: none; }
+
+    .sidebar.collapsed + .main-area .topbar-open { display: inline-flex; }
+
+    .chat-menu {
+      position: fixed;
+      z-index: 120;
+      min-width: 150px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 5px;
+      box-shadow: var(--shadow-input);
+      display: none;
+    }
+
+    .chat-menu.open { display: block; }
+
+    .chat-menu button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .chat-menu button:hover { background: var(--bg-subtle); }
+    .chat-menu button.danger { color: var(--danger); }
+    .chat-menu button.danger:hover { background: rgba(220, 38, 38, 0.08); }
+
+    /* ==========================================
+       PROFILE POPUP (bottom of sidebar)
+       ========================================== */
+    .user-menu-wrap { position: relative; }
+
+    .user-profile-bar.open { background: var(--bg-hover); }
+
+    .user-profile-bar .chev { transition: transform 0.2s ease; color: var(--text-muted); flex-shrink: 0; }
+    .user-profile-bar.open .chev { transform: rotate(180deg); }
+
+    .profile-popup {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(100% + 8px);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      box-shadow: var(--shadow-input);
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform-origin: bottom center;
+      transform: translateY(12px);
+      clip-path: inset(100% 0 0 0 round 16px);
+      transition: clip-path 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+                  opacity 0.2s ease, visibility 0.34s;
+      z-index: 40;
+    }
+
+    .profile-popup.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: none;
+      clip-path: inset(0 0 0 0 round 16px);
+    }
+
+    .pp-plan {
+      padding: 14px 14px 12px;
+      background: var(--bg-subtle);
+      text-align: center;
+    }
+
+    .pp-plan-top {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    .pp-pct { color: var(--text-muted); font-weight: 500; }
+
+    .pp-plan-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 6px 0 10px;
+    }
+
+    .pp-bar {
+      height: 5px;
+      border-radius: 99px;
+      background: var(--border-strong);
+      overflow: hidden;
+    }
+
+    .pp-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 0.35s ease;
+    }
+
+    .pp-cta {
+      width: 100%;
+      border: none;
+      background: var(--accent);
+      color: var(--accent-inv);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .pp-cta:hover { opacity: 0.9; }
+
+    .pp-list { padding: 6px; }
+
+    .pp-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 9px 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13.5px;
+      border-radius: 9px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .pp-item:hover { background: var(--bg-hover); }
+    .pp-item svg { width: 16px; height: 16px; color: var(--text-secondary); flex-shrink: 0; }
+    .pp-item.danger, .pp-item.danger svg { color: var(--danger); }
+    .pp-divider { height: 1px; background: var(--border); margin: 5px 4px; }
+
+    /* ==========================================
+       CHAT: THINKING SHIMMER + WORD-BY-WORD REVEAL
+       ========================================== */
+    .thinking-text {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 500;
+      background: linear-gradient(90deg, var(--text-muted) 0%, var(--text-primary) 50%, var(--text-muted) 100%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      animation: thinkShimmer 1.6s linear infinite;
+    }
+
+    @keyframes thinkShimmer {
+      from { background-position: 200% 0; }
+      to { background-position: -200% 0; }
+    }
+
+    .w-hide, .blk-hide { display: none; }
+
+    .w-in { animation: wordIn 0.5s ease both; }
+
+    @keyframes wordIn {
+      from { opacity: 0; filter: blur(6px); }
+      to { opacity: 1; filter: blur(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .w-in { animation: none; }
+      .thinking-text { animation: none; }
+    }
+
+    .see-more-btn {
+      display: block;
+      margin-top: 4px;
+      padding: 0;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .see-more-btn:hover { color: var(--text-primary); }
+
+    /* Empty state (new chat): centered short greeting + composer */
+    .empty-greeting {
+      display: none;
+      font-size: 30px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: 22px;
+      text-align: center;
+    }
+
+    #view-chat.is-empty .chat-composer-wrap {
+      top: 0;
+      justify-content: center;
+      padding-bottom: 10vh;
+      background: none;
+    }
+
+    #view-chat.is-empty .empty-greeting { display: block; }
+
+    /* Analysis: simple redesign */
+    .analysis-container { max-width: 880px; gap: 22px; }
+    .analysis-title { font-size: 26px; font-weight: 700; letter-spacing: -0.03em; }
+    .analysis-subtitle { font-size: 14px; }
+    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    .kpi-card { padding: 18px 20px; border-radius: 16px; box-shadow: none; }
+    .kpi-label { font-size: 13px; margin-bottom: 8px; }
+    .kpi-val { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; }
+    .kpi-val.neg { color: var(--danger); }
+    .kpi-note { font-size: 12.5px; color: var(--text-muted); margin-top: 6px; }
+    .add-expense-bar {
+      grid-template-columns: 138px 1fr 170px 120px auto;
+      background: var(--bg-surface);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .table-card { border-radius: 16px; box-shadow: none; }
+    table.expense-table th {
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 12.5px;
+      font-weight: 500;
+      padding: 12px 16px;
+    }
+    table.expense-table td { padding: 8px 16px; }
+    .cell-text, .cell-date, .cell-select {
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 6px 8px;
+      outline: none;
+      transition: var(--transition);
+    }
+    .cell-date { width: 100%; }
+    .cell-select { width: 100%; cursor: pointer; }
+    .cell-text { display: block; min-width: 40px; cursor: text; }
+    .cell-text:hover, .cell-date:hover, .cell-select:hover { background: var(--bg-subtle); }
+    .cell-text:focus, .cell-date:focus, .cell-select:focus {
+      background: var(--bg-surface);
+      border-color: var(--text-primary);
+    }
+    td.amt { text-align: right; }
+    td.amt .amt-wrap { display: inline-flex; align-items: center; font-weight: 600; }
+    td.amt .cell-text { text-align: right; font-weight: 600; padding-left: 2px; }
+    .table-hint { font-size: 12.5px; color: var(--text-muted); text-align: center; }
+    .row-delete-btn { display: inline-flex; align-items: center; padding: 6px; }
+
+    /* User row (sidebar bottom) */
+    .user-profile-bar {
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+    }
+    .user-profile-bar:hover, .user-profile-bar.open { background: var(--bg-hover); }
+    .user-avatar { width: 30px; height: 30px; }
+    .user-name { font-size: 13.5px; }
+
+    /* Analysis: view / edit mode */
+    .v-cell { display: block; padding: 6px 8px; font-size: 14px; }
+    td.amt .v-cell { font-weight: 600; }
+    .cell-text:empty::before { content: attr(data-ph); color: var(--text-muted); font-weight: 400; }
+    .edit-on table.expense-table td { padding: 4px; border-right: 1px solid var(--border); }
+    .edit-on table.expense-table td:last-child { border-right: none; }
+    .edit-on .cell-text, .edit-on .cell-date, .edit-on .cell-select {
+      background: var(--bg-surface);
+      border-color: transparent;
+    }
+    .edit-on .cell-text:hover, .edit-on .cell-date:hover, .edit-on .cell-select:hover { background: var(--bg-subtle); }
+    .edit-on .cell-text:focus, .edit-on .cell-date:focus, .edit-on .cell-select:focus {
+      border-color: var(--text-primary);
+      background: var(--bg-surface);
+    }
+    .btn-pill-outline.edit-active { background: var(--accent); color: var(--accent-inv); border-color: var(--accent); }
+    @keyframes rowIn { from { background: var(--bg-hover); } to { background: transparent; } }
+    .row-new { animation: rowIn 0.9s ease; }
+
+    /* Table polish + custom dropdown + date picker */
+    .table-card { background: var(--bg-surface); }
+    table.expense-table th {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg-subtle);
+      padding: 12px 16px;
+    }
+    table.expense-table td { padding: 10px 16px; font-variant-numeric: tabular-nums; }
+    table.expense-table tbody tr { transition: background 0.15s ease; }
+    table.expense-table tbody tr:hover { background: var(--bg-subtle); }
+    .edit-on table.expense-table td { padding: 5px 6px; }
+    .edit-on table.expense-table tbody tr:hover { background: transparent; }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+    .cat-pill { display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px; font-size: 12.5px; }
+
+    .dd-btn {
+      width: 100%;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 0 10px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      text-align: left;
+      transition: var(--transition);
+    }
+    .dd-btn:hover { background: var(--bg-subtle); }
+    .dd-btn.is-open { background: var(--bg-surface); border-color: var(--text-primary); }
+    .dd-btn svg { color: var(--text-muted); flex-shrink: 0; }
+    .dd-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dd-chev { transition: transform 0.2s ease; }
+    .dd-btn.is-open .dd-chev { transform: rotate(180deg); }
+
+    .fpop {
+      position: fixed;
+      z-index: 130;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.14);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(-4px) scale(0.97);
+      transition: opacity 0.16s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.18s;
+    }
+    .fpop.open { opacity: 1; visibility: visible; pointer-events: auto; transform: none; }
+
+    .fpop-menu { padding: 6px; }
+    .fp-opt {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border: none;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13.5px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .fp-opt:hover { background: var(--bg-subtle); }
+    .fp-opt-label { flex: 1; }
+    .fp-check { opacity: 0; color: var(--text-primary); }
+    .fp-opt.sel { font-weight: 600; }
+    .fp-opt.sel .fp-check { opacity: 1; }
+
+    .fpop-cal { padding: 12px; width: 268px; }
+    .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .cal-title { font-size: 14px; font-weight: 600; }
+    .cal-nav {
+      width: 30px; height: 30px; border: none; border-radius: 8px; background: transparent;
+      color: var(--text-secondary); cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    }
+    .cal-nav:hover { background: var(--bg-subtle); color: var(--text-primary); }
+    .cal-week, .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+    .cal-week span { font-size: 11.5px; color: var(--text-muted); padding: 4px 0; }
+    .cal-day {
+      height: 34px; border: 1px solid transparent; border-radius: 9px; background: transparent;
+      color: var(--text-primary); font-family: inherit; font-size: 13px; cursor: pointer;
+    }
+    .cal-day:hover { background: var(--bg-subtle); }
+    .cal-day.today { border-color: var(--border-strong); font-weight: 600; }
+    .cal-day.sel, .cal-day.sel:hover { background: var(--accent); color: var(--accent-inv); font-weight: 600; }
+    .cal-foot { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); display: flex; justify-content: center; }
+    .cal-today {
+      border: none; background: transparent; color: var(--text-primary); font-family: inherit;
+      font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 8px; cursor: pointer;
+    }
+    .cal-today:hover { background: var(--bg-subtle); }
+
+    /* Category icons - icon only, no box/background behind them */
+    .cat-ico {
+      --c: var(--cat-other);
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: none;
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      color: var(--c);
+    }
+    .cat-ico svg { width: 20px; height: 20px; display: block; color: var(--c); }
+    .cat-ico[data-cat="food"]          { --c: var(--cat-food); }
+    .cat-ico[data-cat="groceries"]     { --c: var(--cat-groceries); }
+    .cat-ico[data-cat="transport"]     { --c: var(--cat-transport); }
+    .cat-ico[data-cat="bills"]         { --c: var(--cat-bills); }
+    .cat-ico[data-cat="shopping"]      { --c: var(--cat-shopping); }
+    .cat-ico[data-cat="rent"]          { --c: var(--cat-rent); }
+    .cat-ico[data-cat="entertainment"] { --c: var(--cat-entertainment); }
+    .cat-ico[data-cat="investments"]   { --c: var(--cat-investments); }
+    .cat-ico[data-cat="other"]         { --c: var(--cat-other); }
+    .dd-btn .cat-ico svg, .fp-opt .cat-ico svg { color: var(--c); }
+    .cat-view { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; padding: 6px 0; }
+    .fp-opt { padding: 8px 10px; }
+    .fp-opt.sel { background: var(--bg-subtle); }
+    .fpop-menu { max-height: min(60vh, 440px); overflow-y: auto; }
+    table.expense-table { min-width: 640px; }
+    .search-result-item .sr-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+      .add-expense-bar { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { position: fixed; left: 0; top: 0; bottom: 0; box-shadow: 0 0 40px rgba(0, 0, 0, 0.25); }
+      .sidebar.collapsed { margin-left: -280px; box-shadow: none; }
+      .analysis-header { flex-wrap: wrap; gap: 12px; }
+      .empty-greeting { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================
+       SIDEBAR
+       ========================================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <!-- Top Brand with logo.svg & Quick Search/Collapse Icons -->
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-wrap">
+          <img src="logo.svg" alt="Ossmo" class="brand-logo-img" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';" />
+          <span class="brand-fallback" id="logoFallback">O</span>
+          <span class="brand-title">Ossmo</span>
+        </a>
+
+        <div class="header-icon-actions">
+          <button type="button" class="icon-btn" title="Search" onclick="openSearchModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+          <button type="button" class="icon-btn" title="Toggle Sidebar" onclick="toggleSidebar()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="21"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Primary Features Navigation -->
+      <nav class="nav-list">
+        <button type="button" class="nav-item new-chat-btn" id="navNewChat" onclick="startNewChat()">
+          <span class="nav-item-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path></svg>
+            <span>New Chat</span>
+          </span>
+        </button>
+
+        <button type="button" class="nav-item" id="navSearch" onclick="openSearchModal()">
+          <span class="nav-item-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Search</span>
+          </span>
+        </button>
+
+        <button type="button" class="nav-item" id="navAnalysis" onclick="switchView('analysis')">
+          <span class="nav-item-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+              <line x1="3" y1="9" x2="21" y2="9"></line>
+              <line x1="9" y1="21" x2="9" y2="9"></line>
+            </svg>
+            <span>Analysis</span>
+          </span>
+        </button>
+      </nav>
+
+      <!-- Recents -->
+      <div class="history-section">
+        <div class="history-label" id="historyLabel">Recents</div>
+        <div id="chatHistoryList"></div>
+      </div>
+    </div>
+
+    <!-- Bottom: User Profile + Popup -->
+    <div class="sidebar-bottom">
+      <div class="user-menu-wrap">
+        <div class="profile-popup" id="profilePopup">
+          <div class="pp-plan">
+            <div class="pp-plan-top">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+              <span>Monthly Spend</span>
+              <span class="pp-pct" id="sidebarWidgetPercent">0%</span>
+            </div>
+            <div class="pp-plan-sub" id="sidebarWidgetSub">₹0 of ₹50,000 used</div>
+            <div class="pp-bar"><div class="pp-bar-fill" id="sidebarBudgetFill"></div></div>
+          </div>
+          <button type="button" class="pp-cta" onclick="closeProfileMenu(); switchView('analysis'); setEditMode(true);">
+            <span>Add / Edit Expenses</span>
+          </button>
+          <div class="pp-list">
+            <button type="button" class="pp-item" onclick="toggleTheme(); closeProfileMenu();">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+              <span>Dark / Light mode</span>
+            </button>
+            <div class="pp-divider"></div>
+            <button type="button" class="pp-item danger" onclick="window.location.href='index.html'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="user-profile-bar" id="userProfileBar" onclick="toggleProfileMenu(event)">
+          <div class="user-info-left">
+            <div class="user-avatar" id="userAvatar">O</div>
+            <div class="user-meta">
+              <div class="user-name" id="userNameDisplay">Ossmo User</div>
+              <div class="user-role" id="userRoleDisplay">Finance AI Plan</div>
+            </div>
+          </div>
+          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+
+  <!-- ==========================================
+       MAIN AREA
+       ========================================== -->
+  <div class="main-area">
+    <!-- Top Header -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button type="button" class="icon-btn topbar-open" onclick="toggleSidebar()" title="Open sidebar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+
+    <!-- ==========================================
+         WORKSPACE VIEW 1: AI CHAT
+         ========================================== -->
+    <section class="workspace-view active" id="view-chat">
+      <div class="chat-scroll-area" id="chatScrollArea">
+        <div class="chat-thread" id="chatThread">
+          <!-- Initial AI Greeting rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Bottom Floating Input Bar -->
+      <div class="chat-composer-wrap">
+        <h1 class="empty-greeting" id="emptyGreeting"></h1>
+        <form class="chat-composer" id="chatComposer" onsubmit="handleChatSubmit(event)">
+          <button type="button" class="composer-plus-btn" title="Open Monthly Expense Table" onclick="switchView('analysis')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+          <textarea
+            id="chatInput"
+            class="composer-input"
+            rows="1"
+            placeholder="Ask me anything..."
+            autocomplete="off"
+          ></textarea>
+          <div class="composer-actions">
+            <div class="mode-wrap">
+              <button type="button" class="composer-mode-btn" onclick="toggleModeMenu(event)">
+                <span id="composerModeLabel">Auto</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="mode-menu" id="modeMenu">
+                <button type="button" onclick="setReplyMode('Auto')"><span>Auto</span><span data-check="Auto">✓</span></button>
+                <button type="button" onclick="setReplyMode('Fast')"><span>Fast</span><span data-check="Fast"></span></button>
+                <button type="button" onclick="setReplyMode('Thinking')"><span>Thinking</span><span data-check="Thinking"></span></button>
+              </div>
+            </div>
+            <button type="button" class="composer-icon-btn" id="composerMic" title="Voice input">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0"></path><line x1="12" y1="18" x2="12" y2="22"></line></svg>
+            </button>
+            <button type="submit" class="composer-send-btn" title="Send">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+
+    <!-- ==========================================
+         WORKSPACE VIEW 2: ANALYSIS & MONTHLY TABLE
+         ========================================== -->
+    <section class="workspace-view" id="view-analysis">
+      <div class="analysis-scroll-area">
+        <div class="analysis-container">
+
+          <div class="analysis-header">
+            <div>
+              <h1 class="analysis-title">My Expenses</h1>
+              <p class="analysis-subtitle">Is mahine ka poora hisaab, ek jagah.</p>
+            </div>
+            <div class="analysis-controls">
+              <button type="button" class="btn-pill-outline" id="editModeBtn" onclick="toggleTableEditMode()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                <span id="editModeLabel">Edit</span>
+              </button>
+              <button type="button" class="btn-pill-black" onclick="addNewRow()">+ Add</button>
+            </div>
+          </div>
+
+          <!-- 3 simple numbers -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Income</div>
+              <div class="kpi-val" id="kpiIncome">₹0</div>
+              <div class="kpi-note">Is mahine ki kamaai</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Spent</div>
+              <div class="kpi-val" id="kpiSpent">₹0</div>
+              <div class="kpi-note" id="kpiTxCount">0 entries</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Left</div>
+              <div class="kpi-val" id="kpiBalance">₹0</div>
+              <div class="kpi-note" id="kpiSavingsRate">100% bacha hai</div>
+            </div>
+          </div>
+
+          <!-- Simple table -->
+          <div class="table-card" id="tableCardWrap">
+            <div class="expense-table-wrap">
+              <table class="expense-table">
+                <thead>
+                  <tr>
+                    <th style="width: 175px;">Date</th>
+                    <th>Item</th>
+                    <th style="width: 200px;">Category</th>
+                    <th style="width: 140px; text-align: right;">Amount</th>
+                    <th style="width: 52px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="expenseTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <p class="table-hint" id="tableHint">Table badalne ke liye upar "Edit" dabao.</p>
+
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+  <!-- ==========================================
+       SEARCH MODAL (Ctrl+K)
+       ========================================== -->
+  <div class="modal-backdrop" id="searchModal" onclick="if(event.target===this) closeSearchModal()">
+    <div class="search-modal">
+      <div class="search-modal-header">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="text"
+          id="globalSearchInput"
+          class="search-modal-input"
+          placeholder="Search any expense item, category, date, or command..."
+          oninput="renderSearchResults(this.value)"
+        />
+        <button type="button" class="pill-action-btn" onclick="closeSearchModal()">ESC</button>
+      </div>
+      <div class="search-results-list" id="searchResultsList"></div>
+    </div>
+  </div>
+
+
+  <!-- Floating popover (category menu / date picker) -->
+  <div class="fpop" id="floatPop"></div>
+
+  <!-- Recents context menu -->
+  <div class="chat-menu" id="chatMenu">
+    <button type="button" onclick="renameChatFromMenu()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+      <span>Rename</span>
+    </button>
+    <button type="button" class="danger" onclick="deleteChatFromMenu()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
+      <span>Delete</span>
+    </button>
+  </div>
+
+
+
+  <!-- Markdown rendering for AI responses (checklists, tables, code blocks) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <!-- API config -->
+  <script src="config.js"></script>
+
+  <script>
+    // ============================================================
+    // OSSMO AI — Dashboard
+    // All data goes through the Cloudflare Worker API.
+    // No localStorage for user data — only theme preference.
+    // ============================================================
+
+    // ---------- Theme (only thing in localStorage) ----------
+    (function applySavedTheme() {
+      let t = null;
+      try { t = localStorage.getItem('ossmo_theme'); } catch (err) {}
+      document.body.classList.toggle('dark-theme', t === 'dark');
+    })();
+
+    // ---------- State ----------
+    let userState = { id: '', email: '', name: '', profession: '', age: '', monthlyIncome: 0 };
+    let expenses = [];
+    let chats = [];
+    let activeChatId = null;
+    let isTableEditMode = false;
+    let newRowId = null;
+    let replying = false;
+    let replyMode = 'Auto';
+    let pendingAttachments = []; // {id, fileName, mimeType, previewUrl}
+    let abortController = null;
+    const THINK_MS = { Auto: 900, Fast: 350, Thinking: 1800 };
+
+    const todayStr = (() => {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    })();
+
+    // ---------- API helpers ----------
+    async function api(path, opts = {}) {
+      const res = await fetch(`${API_BASE}${path}`, {
+        ...opts,
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+      });
+      if (res.status === 401) {
+        window.location.href = 'index.html';
+        throw new Error('Unauthorized');
+      }
+      return res;
+    }
+
+    function escapeHTML(str) {
+      return String(str == null ? '' : str).replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    // ============================================================
+    // 1. AUTH CHECK + INIT
+    // ============================================================
+    async function initDashboard() {
+      try {
+        const res = await api('/api/auth/me');
+        const data = await res.json();
+        if (!data.user) { window.location.href = 'index.html'; return; }
+        if (!data.user.isOnboarded) { window.location.href = 'index.html'; return; }
+        userState = data.user;
+        document.getElementById('userNameDisplay').textContent = userState.name || 'User';
+        document.getElementById('userRoleDisplay').textContent = userState.profession || 'Ossmo User';
+        document.getElementById('userAvatar').textContent = (userState.name || 'U').charAt(0).toUpperCase();
+        await loadExpenses();
+        await loadChats();
+        renderInitialChatGreeting();
+      } catch (err) {
+        console.error('Init error:', err);
+        window.location.href = 'index.html';
+      }
+    }
+
+    // ============================================================
+    // 2. EXPENSES
+    // ============================================================
+    async function loadExpenses() {
+      try {
+        const res = await api('/api/expenses');
+        const data = await res.json();
+        expenses = data.expenses || [];
+      } catch (err) {
+        expenses = [];
+      }
+      updateAllMetricsAndUI();
+    }
+
+    async function saveExpenseToServer(expense) {
+      const res = await api('/api/expenses', {
+        method: 'POST',
+        body: JSON.stringify(expense),
+      });
+      return res.json();
+    }
+
+    async function updateExpenseOnServer(id, patch) {
+      const res = await api(`/api/expenses/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(patch),
+      });
+      return res.json();
+    }
+
+    async function deleteExpenseFromServer(id) {
+      await api(`/api/expenses/${id}`, { method: 'DELETE' });
+    }
+
+    function getSummaryStats() {
+      const totalSpent = expenses.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+      const remaining = userState.monthlyIncome - totalSpent;
+      const usedPct = userState.monthlyIncome > 0
+        ? Math.min(100, Math.round((totalSpent / userState.monthlyIncome) * 100))
+        : 0;
+      const byCat = {};
+      expenses.forEach(e => { byCat[e.category] = (byCat[e.category] || 0) + Number(e.amount || 0); });
+      let topCat = '—', topCatAmt = 0;
+      Object.entries(byCat).forEach(([cat, amt]) => {
+        if (amt > topCatAmt) { topCat = cat; topCatAmt = amt; }
+      });
+      return { totalSpent, remaining, usedPct, topCat, topCatAmt, byCat };
+    }
+
+    function updateAllMetricsAndUI(skipTable) {
+      const { totalSpent, remaining, usedPct } = getSummaryStats();
+      document.getElementById('sidebarWidgetPercent').textContent = `${usedPct}%`;
+      document.getElementById('sidebarWidgetSub').textContent =
+        `₹${totalSpent.toLocaleString('en-IN')} of ₹${userState.monthlyIncome.toLocaleString('en-IN')} used`;
+      document.getElementById('sidebarBudgetFill').style.width = `${usedPct}%`;
+      document.getElementById('kpiIncome').textContent = `₹${userState.monthlyIncome.toLocaleString('en-IN')}`;
+      document.getElementById('kpiSpent').textContent = `₹${totalSpent.toLocaleString('en-IN')}`;
+      document.getElementById('kpiTxCount').textContent = `${expenses.length} ${expenses.length === 1 ? 'entry' : 'entries'}`;
+      const bal = document.getElementById('kpiBalance');
+      bal.textContent = `₹${remaining.toLocaleString('en-IN')}`;
+      bal.classList.toggle('neg', remaining < 0);
+      document.getElementById('kpiSavingsRate').textContent = `${Math.max(0, 100 - usedPct)}% bacha hai`;
+      if (!skipTable) renderExpenseTable();
+    }
+
+    // ============================================================
+    // 3. EXPENSE TABLE (same UI as original)
+    // ============================================================
+    const EXPENSE_CATEGORIES = ['Food & Dining','Groceries','Transport & Fuel','Bills & Recharge','Shopping','Rent & Housing','Entertainment','Investments','Other'];
+
+    function fmtDate(d) {
+      const dt = new Date(d + 'T00:00:00');
+      return isNaN(dt) ? d : dt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function renderExpenseTable() {
+      const tbody = document.getElementById('expenseTableBody');
+      if (expenses.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 36px; color: var(--text-muted);">Abhi koi kharcha nahi hai. Upar "+ Add" dabake pehla kharcha likho, ya chat mein Ossmo ko bolo.</td></tr>`;
+        return;
+      }
+      const E = isTableEditMode;
+      const enter = "if(event.key==='Enter'){event.preventDefault();";
+      tbody.innerHTML = expenses.map(exp => `
+        <tr class="${exp.id === newRowId ? 'row-new' : ''}">
+          <td>${E
+            ? `<input type="date" class="cell-date" value="${exp.date}" onchange="editField(${exp.id}, 'date', this.value)" />`
+            : `<span class="v-cell">${fmtDate(exp.date)}</span>`}</td>
+          <td>${E
+            ? `<input type="text" class="cell-text" value="${escapeHTML(exp.item)}" onchange="editField(${exp.id}, 'item', this.value)" />`
+            : `<span class="v-cell">${escapeHTML(exp.item)}${exp.source === 'ai' ? ' <span style="font-size:10px;color:var(--text-muted);background:var(--bg-subtle);padding:1px 5px;border-radius:4px;">AI</span>' : ''}</span>`}</td>
+          <td>${E
+            ? `<select class="cell-select" onchange="editField(${exp.id}, 'category', this.value)">${EXPENSE_CATEGORIES.map(c => `<option ${c === exp.category ? 'selected' : ''}>${c}</option>`).join('')}</select>`
+            : `<span class="cat-view"><span class="dot" style="background:${catColor(exp.category)}"></span><span>${exp.category}</span></span>`}</td>
+          <td class="amt">${E
+            ? `<span class="amt-wrap"><span>₹</span><input type="number" class="cell-text" style="text-align:right;font-weight:600;" value="${exp.amount}" onchange="editField(${exp.id}, 'amount', Number(this.value))" /></span>`
+            : `<span class="v-cell">₹ ${Number(exp.amount).toLocaleString('en-IN')}</span>`}</td>
+          <td style="text-align: right;">${E ? `<button type="button" class="row-delete-btn" onclick="deleteExpenseRow(${exp.id})" title="Delete"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>` : ''}</td>
+        </tr>
+      `).join('');
+      newRowId = null;
+    }
+
+    function catColor(cat) {
+      const map = {
+        'Food & Dining': 'var(--cat-food)', 'Groceries': 'var(--cat-groceries)',
+        'Transport & Fuel': 'var(--cat-transport)', 'Bills & Recharge': 'var(--cat-bills)',
+        'Shopping': 'var(--cat-shopping)', 'Rent & Housing': 'var(--cat-rent)',
+        'Entertainment': 'var(--cat-entertainment)', 'Investments': 'var(--cat-investments)',
+        'Other': 'var(--cat-other)'
+      };
+      return map[cat] || 'var(--cat-other)';
+    }
+
+    async function editField(id, field, value) {
+      await updateExpenseOnServer(id, { [field]: value });
+      const target = expenses.find(e => e.id === id);
+      if (target) target[field] = value;
+      updateAllMetricsAndUI(true);
+    }
+
+    function setEditMode(on) {
+      if (isTableEditMode === on) return;
+      isTableEditMode = on;
+      if (!on) {
+        expenses = expenses.filter(e => e.item || Number(e.amount) > 0);
+        expenses.forEach(e => { if (!e.item) e.item = 'Untitled'; });
+        newRowId = null;
+      }
+      document.getElementById('tableCardWrap').classList.toggle('edit-on', on);
+      document.getElementById('editModeBtn').classList.toggle('edit-active', on);
+      document.getElementById('editModeLabel').textContent = on ? 'Done' : 'Edit';
+      document.getElementById('tableHint').textContent = on
+        ? 'Kisi bhi cell par click karke likho. Bahar click karne par auto-save ho jayega.'
+        : 'Table badalne ke liye upar "Edit" dabao.';
+      updateAllMetricsAndUI();
+    }
+
+    function toggleTableEditMode() { setEditMode(!isTableEditMode); }
+
+    async function addNewRow() {
+      switchView('analysis');
+      if (!isTableEditMode) setEditMode(true);
+      const id = Date.now();
+      newRowId = id;
+      try {
+        const res = await saveExpenseToServer({
+          date: todayStr, item: '', category: 'Other', mode: 'UPI', amount: 0, source: 'manual'
+        });
+        if (res.expense) {
+          expenses.unshift(res.expense);
+          newRowId = res.expense.id;
+        }
+      } catch (err) { /* ignore */ }
+      updateAllMetricsAndUI();
+    }
+
+    async function deleteExpenseRow(id) {
+      await deleteExpenseFromServer(id);
+      expenses = expenses.filter(e => e.id !== id);
+      updateAllMetricsAndUI();
+    }
+
+    // ============================================================
+    // 4. AI CHAT — streaming via SSE from Worker
+    // ============================================================
+    function renderInitialChatGreeting() {
+      const h = new Date().getHours();
+      const part = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+      const first = (userState.name || '').trim().split(/\s+/)[0] || 'there';
+      document.getElementById('emptyGreeting').textContent = `${part}, ${first}`;
+      document.getElementById('chatThread').innerHTML = '';
+      document.getElementById('view-chat').classList.add('is-empty');
+    }
+
+    function quickAsk(text) {
+      switchView('chat');
+      const input = document.getElementById('chatInput');
+      input.value = text;
+      handleChatSubmit(new Event('submit'));
+    }
+
+    // ---------- Chat sessions ----------
+    async function loadChats() {
+      try {
+        const res = await api('/api/chat/sessions');
+        const data = await res.json();
+        chats = data.sessions || [];
+      } catch (err) { chats = []; }
+      renderHistory();
+    }
+
+    function saveChats() { /* no-op — server is source of truth */ }
+
+    function makeChatTitle(text) {
+      const s = text.replace(/\s+/g, ' ').trim();
+      return s.length > 50 ? s.slice(0, 50).trim() + '…' : s;
+    }
+
+    function renderHistory() {
+      const list = document.getElementById('chatHistoryList');
+      const label = document.getElementById('historyLabel');
+      const inChat = document.getElementById('view-chat').classList.contains('active');
+      label.style.display = chats.length ? '' : 'none';
+      list.innerHTML = chats.map(c => `
+        <div class="history-item ${inChat && c.id === activeChatId ? 'active' : ''}" data-id="${c.id}" onclick="openChat('${c.id}')">
+          <span class="history-title">${escapeHTML(c.title)}</span>
+          <button type="button" class="history-more" title="More" onclick="openChatMenu(event, '${c.id}')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    async function openChat(id) {
+      try {
+        const res = await api(`/api/chat/sessions/${id}`);
+        const data = await res.json();
+        if (!data.session) return;
+        activeChatId = id;
+        replying = false;
+        switchView('chat');
+        const thread = document.getElementById('chatThread');
+        thread.innerHTML = '';
+        document.getElementById('view-chat').classList.remove('is-empty');
+        for (const m of (data.session.messages || [])) {
+          if (m.role === 'user') appendUserMessage(m.content, m.attachments || []);
+          else if (m.role === 'assistant') appendAIMessage(m.content, false);
+        }
+        renderHistory();
+        scrollToChatBottom();
+      } catch (err) { /* ignore */ }
+    }
+
+    let menuChatId = null;
+    function openChatMenu(ev, id) {
+      ev.stopPropagation();
+      closeChatMenu();
+      menuChatId = id;
+      const btn = ev.currentTarget;
+      btn.closest('.history-item').classList.add('menu-open');
+      const menu = document.getElementById('chatMenu');
+      const r = btn.getBoundingClientRect();
+      menu.style.top = (r.bottom + 4) + 'px';
+      menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 166)) + 'px';
+      menu.classList.add('open');
+    }
+
+    function closeChatMenu() {
+      document.getElementById('chatMenu').classList.remove('open');
+      document.querySelectorAll('.history-item.menu-open').forEach(el => el.classList.remove('menu-open'));
+    }
+
+    async function renameChatFromMenu() {
+      const id = menuChatId;
+      closeChatMenu();
+      const item = document.querySelector(`.history-item[data-id="${id}"]`);
+      const chat = chats.find(c => c.id === id);
+      if (!item || !chat) return;
+      const titleEl = item.querySelector('.history-title');
+      const inp = document.createElement('input');
+      inp.className = 'history-rename';
+      inp.value = chat.title;
+      inp.maxLength = 80;
+      item.classList.add('renaming');
+      titleEl.replaceWith(inp);
+      inp.addEventListener('click', e => e.stopPropagation());
+      let done = false;
+      const commit = async (save) => {
+        if (done) return;
+        done = true;
+        if (save) {
+          const v = inp.value.trim();
+          if (v && v !== chat.title) {
+            chat.title = v;
+            await api(`/api/chat/sessions/${id}`, { method: 'PATCH', body: JSON.stringify({ title: v }) });
+          }
+        }
+        renderHistory();
+      };
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); commit(true); }
+        else if (e.key === 'Escape') { e.stopPropagation(); commit(false); }
+      });
+      inp.addEventListener('blur', () => commit(true));
+      inp.focus(); inp.select();
+    }
+
+    async function deleteChatFromMenu() {
+      const id = menuChatId;
+      closeChatMenu();
+      await api(`/api/chat/sessions/${id}`, { method: 'DELETE' });
+      chats = chats.filter(c => c.id !== id);
+      if (activeChatId === id) startNewChat();
+      else renderHistory();
+    }
+
+    // ---------- File attachment upload ----------
+    async function handleFileSelect(files) {
+      for (const file of files) {
+        if (file.size > 8 * 1024 * 1024) {
+          alert(`${file.name} is too large (max 8MB)`);
+          continue;
+        }
+        const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
+        const tempId = 'temp-' + Date.now() + '-' + Math.random();
+        pendingAttachments.push({ id: tempId, fileName: file.name, mimeType: file.type, previewUrl, uploading: true });
+        renderPendingAttachments();
+        try {
+          const fd = new FormData();
+          fd.append('file', file);
+          const res = await fetch(`${API_BASE}/api/chat/upload`, {
+            method: 'POST',
+            credentials: 'include',
+            body: fd,
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            alert(data.error || 'Upload failed');
+            pendingAttachments = pendingAttachments.filter(p => p.id !== tempId);
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+            renderPendingAttachments();
+            continue;
+          }
+          const idx = pendingAttachments.findIndex(p => p.id === tempId);
+          if (idx >= 0) {
+            pendingAttachments[idx] = { id: data.attachment.id, fileName: data.attachment.fileName, mimeType: data.attachment.mimeType, previewUrl, uploading: false };
+          }
+          renderPendingAttachments();
+        } catch (err) {
+          alert('Upload failed: ' + err.message);
+          pendingAttachments = pendingAttachments.filter(p => p.id !== tempId);
+          if (previewUrl) URL.revokeObjectURL(previewUrl);
+          renderPendingAttachments();
+        }
+      }
+    }
+
+    function renderPendingAttachments() {
+      let bar = document.getElementById('pendingAttachments');
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.id = 'pendingAttachments';
+        bar.style.cssText = 'padding: 0 12px 8px; display: flex; flex-wrap: wrap; gap: 6px;';
+        document.querySelector('.chat-composer-wrap').insertBefore(bar, document.querySelector('.chat-composer-wrap').firstChild);
+      }
+      bar.innerHTML = pendingAttachments.map(p => `
+        <div style="display:inline-flex;align-items:center;gap:6px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:8px;padding:4px 8px;font-size:12px;">
+          ${p.previewUrl ? `<img src="${p.previewUrl}" style="width:20px;height:20px;border-radius:4px;object-fit:cover;" />` : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'}
+          <span style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHTML(p.fileName)}</span>
+          ${p.uploading ? '<span style="color:var(--text-muted);">⏳</span>' : ''}
+          <button onclick="removeAttachment('${p.id}')" style="border:none;background:none;cursor:pointer;color:var(--text-muted);padding:0;display:flex;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+      `).join('');
+      if (pendingAttachments.length === 0) bar.innerHTML = '';
+    }
+
+    function removeAttachment(id) {
+      const p = pendingAttachments.find(x => x.id === id);
+      if (p && p.previewUrl) URL.revokeObjectURL(p.previewUrl);
+      pendingAttachments = pendingAttachments.filter(x => x.id !== id);
+      renderPendingAttachments();
+    }
+
+    // ---------- Send message + stream response ----------
+    async function handleChatSubmit(e) {
+      e.preventDefault();
+      if (replying) return;
+      const input = document.getElementById('chatInput');
+      const query = input.value.trim();
+      const attachmentIds = pendingAttachments.filter(p => !p.uploading && !p.id.startsWith('temp-')).map(p => p.id);
+      if (!query && attachmentIds.length === 0) return;
+
+      // Clear pending attachments (they're now part of the message)
+      const sentAttachments = [...pendingAttachments];
+      pendingAttachments = [];
+      renderPendingAttachments();
+
+      document.getElementById('view-chat').classList.remove('is-empty');
+      appendUserMessage(query || '(attachment only)', sentAttachments);
+      resetComposer();
+      replying = true;
+      abortController = new AbortController();
+      const thinking = showThinking();
+
+      try {
+        const res = await fetch(`${API_BASE}/api/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            sessionId: activeChatId,
+            message: query,
+            attachmentIds,
+          }),
+          signal: abortController.signal,
+        });
+
+        if (!res.ok || !res.body) {
+          const errText = await res.text();
+          throw new Error(errText || 'Chat request failed');
+        }
+
+        thinking.remove();
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let assistantText = '';
+        let toolCallDiv = null;
+        const aiContent = appendAIMessageContainer();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const events = buffer.split('\n\n');
+          buffer = events.pop() || '';
+          for (const evt of events) {
+            const lines = evt.split('\n');
+            let eventType = '', dataStr = '';
+            for (const ln of lines) {
+              if (ln.startsWith('event: ')) eventType = ln.slice(7);
+              else if (ln.startsWith('data: ')) dataStr = ln.slice(6);
+            }
+            if (!eventType) continue;
+            let data = {}; try { data = JSON.parse(dataStr); } catch {}
+            if (eventType === 'session') {
+              if (data.sessionId && (!activeChatId || activeChatId !== data.sessionId)) {
+                activeChatId = data.sessionId;
+                loadChats();
+              }
+            } else if (eventType === 'token') {
+              assistantText += data.text || '';
+              aiContent.innerHTML = marked.parse(assistantText);
+              scrollToChatBottom();
+            } else if (eventType === 'tool_call' && data.tool && data.tool.name === 'log_expense') {
+              if (!toolCallDiv) {
+                toolCallDiv = document.createElement('div');
+                toolCallDiv.style.cssText = 'display:inline-flex;align-items:center;gap:6px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;margin-top:6px;';
+                toolCallDiv.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Logging expense…</span>';
+                document.getElementById('chatThread').appendChild(toolCallDiv);
+                scrollToChatBottom();
+              }
+            } else if (eventType === 'tool_result' && data.tool === 'log_expense') {
+              if (toolCallDiv && data.expense) {
+                toolCallDiv.querySelector('span').textContent = `Logged: ${data.expense.item} — ₹${data.expense.amount.toLocaleString('en-IN')} (${data.expense.category})`;
+                loadExpenses(); // refresh table
+              }
+            } else if (eventType === 'error') {
+              assistantText += `\n\n**Error:** ${data.error || 'Unknown error'}`;
+              aiContent.innerHTML = marked.parse(assistantText);
+            }
+          }
+        }
+        if (toolCallDiv) toolCallDiv = null;
+      } catch (err) {
+        if (err.name === 'AbortError') { /* user stopped */ }
+        else {
+          thinking.remove();
+          appendAIMessage(`**Error:** ${err.message}`, false);
+        }
+      } finally {
+        replying = false;
+        abortController = null;
+      }
+    }
+
+    function showThinking() {
+      const thread = document.getElementById('chatThread');
+      const div = document.createElement('div');
+      div.className = 'msg-ai-row';
+      div.innerHTML = '<div class="thinking-text">Thinking</div>';
+      thread.appendChild(div);
+      scrollToChatBottom();
+      return div;
+    }
+
+    function appendUserMessage(text, attachments) {
+      const thread = document.getElementById('chatThread');
+      const row = document.createElement('div');
+      row.className = 'msg-user-row';
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-user-bubble';
+      let html = '';
+      if (attachments && attachments.length > 0) {
+        html += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;">';
+        for (const a of attachments) {
+          if (a.previewUrl) {
+            html += `<img src="${a.previewUrl}" style="width:50px;height:50px;border-radius:6px;object-fit:cover;" />`;
+          } else {
+            html += `<span style="font-size:11px;background:var(--bg-surface);padding:2px 6px;border-radius:4px;">📎 ${escapeHTML(a.fileName)}</span>`;
+          }
+        }
+        html += '</div>';
+      }
+      html += `<span>${escapeHTML(text)}</span>`;
+      bubble.innerHTML = html;
+      row.appendChild(bubble);
+      thread.appendChild(row);
+      scrollToChatBottom();
+    }
+
+    function appendAIMessageContainer() {
+      const thread = document.getElementById('chatThread');
+      const row = document.createElement('div');
+      row.className = 'msg-ai-row';
+      const header = document.createElement('div');
+      header.className = 'ai-model-header';
+      header.innerHTML = '<span class="ai-spark-dot"></span> Ossmo';
+      const content = document.createElement('div');
+      content.className = 'msg-ai-content';
+      content.style.cssText = 'font-size:14.5px;line-height:1.68;';
+      row.appendChild(header);
+      row.appendChild(content);
+      thread.appendChild(row);
+      scrollToChatBottom();
+      return content;
+    }
+
+    function appendAIMessage(markdownText, animate) {
+      const content = appendAIMessageContainer();
+      content.innerHTML = marked.parse(markdownText);
+      scrollToChatBottom();
+    }
+
+    function startNewChat() {
+      activeChatId = null;
+      replying = false;
+      if (abortController) abortController.abort();
+      switchView('chat');
+      renderInitialChatGreeting();
+      renderHistory();
+      document.getElementById('chatInput').focus();
+    }
+
+    // ============================================================
+    // 5. NAVIGATION, THEME, COMPOSER
+    // ============================================================
+    function switchView(viewName) {
+      const isChat = viewName === 'chat';
+      document.getElementById('view-chat').classList.toggle('active', isChat);
+      document.getElementById('view-analysis').classList.toggle('active', !isChat);
+      document.getElementById('navAnalysis').classList.toggle('active', !isChat);
+      if (window.innerWidth <= 768) document.getElementById('sidebar').classList.add('collapsed');
+      renderHistory();
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    function toggleTheme() {
+      const dark = document.body.classList.toggle('dark-theme');
+      try { localStorage.setItem('ossmo_theme', dark ? 'dark' : 'light'); } catch (err) {}
+    }
+
+    function scrollToChatBottom() {
+      const area = document.getElementById('chatScrollArea');
+      area.scrollTop = area.scrollHeight;
+    }
+
+    // ---------- Profile popup, mode menu ----------
+    function toggleProfileMenu(e) {
+      if (e) e.stopPropagation();
+      document.getElementById('profilePopup').classList.toggle('open');
+      document.getElementById('userProfileBar').classList.toggle('open');
+    }
+    function closeProfileMenu() {
+      document.getElementById('profilePopup').classList.remove('open');
+      document.getElementById('userProfileBar').classList.remove('open');
+    }
+    function toggleModeMenu(e) {
+      e.stopPropagation();
+      document.getElementById('modeMenu').classList.toggle('open');
+    }
+    function setReplyMode(mode) {
+      replyMode = mode;
+      document.getElementById('composerModeLabel').textContent = mode;
+      document.querySelectorAll('#modeMenu [data-check]').forEach(el => {
+        el.textContent = el.getAttribute('data-check') === mode ? '✓' : '';
+      });
+      document.getElementById('modeMenu').classList.remove('open');
+    }
+
+    // ---------- Logout ----------
+    async function logout() {
+      try { await api('/api/auth/signout', { method: 'POST' }); } catch (err) {}
+      window.location.href = 'index.html';
+    }
+
+    // ---------- Composer ----------
+    function measureComposer() {
+      const ta = document.getElementById('chatInput');
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 160) + 'px';
+    }
+    function syncComposer() {
+      const form = document.getElementById('chatComposer');
+      const ta = document.getElementById('chatInput');
+      measureComposer();
+      form.classList.toggle('has-text', ta.value.trim().length > 0);
+      if (!ta.value) form.classList.remove('multiline');
+      else if (ta.scrollHeight > 30) form.classList.add('multiline');
+      measureComposer();
+    }
+    function resetComposer() {
+      document.getElementById('chatInput').value = '';
+      syncComposer();
+    }
+    function initComposer() {
+      const form = document.getElementById('chatComposer');
+      const ta = document.getElementById('chatInput');
+      ta.addEventListener('input', syncComposer);
+      ta.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+          e.preventDefault();
+          form.requestSubmit();
+        }
+      });
+
+      // Add file upload button next to plus button in composer
+      const plusBtn = document.querySelector('.composer-plus-btn');
+      if (plusBtn) {
+        const fileBtn = document.createElement('button');
+        fileBtn.type = 'button';
+        fileBtn.className = 'composer-plus-btn';
+        fileBtn.title = 'Attach receipt (image or PDF)';
+        fileBtn.style.marginRight = '2px';
+        fileBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>';
+        fileBtn.onclick = () => {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.multiple = true;
+          input.accept = 'image/*,application/pdf,text/plain,text/csv';
+          input.onchange = () => handleFileSelect(input.files);
+          input.click();
+        };
+        plusBtn.parentNode.insertBefore(fileBtn, plusBtn.nextSibling);
+      }
+
+      const mic = document.getElementById('composerMic');
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) {
+        if (mic) mic.style.display = 'none';
+      } else {
+        let rec = null, listening = false;
+        const stopUI = () => { listening = false; if (mic) mic.classList.remove('listening'); };
+        if (mic) mic.addEventListener('click', () => {
+          if (listening && rec) { rec.stop(); return; }
+          rec = new SR();
+          rec.lang = 'en-IN';
+          rec.interimResults = false;
+          rec.continuous = false;
+          rec.onresult = ev => {
+            const t = Array.from(ev.results).map(r => r[0].transcript).join(' ');
+            ta.value = (ta.value ? ta.value + ' ' : '') + t;
+            syncComposer();
+          };
+          rec.onend = stopUI;
+          rec.onerror = stopUI;
+          rec.start();
+          listening = true;
+          mic.classList.add('listening');
+        });
+      }
+
+      setReplyMode('Auto');
+    }
+
+    // ---------- Keyboard + global listeners ----------
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openSearchModal();
+      } else if (e.key === 'Escape') {
+        closeSearchModal();
+        closeProfileMenu();
+        closeChatMenu();
+        document.getElementById('modeMenu').classList.remove('open');
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.user-menu-wrap')) closeProfileMenu();
+      if (!e.target.closest('#chatMenu')) closeChatMenu();
+      if (!e.target.closest('.mode-wrap')) document.getElementById('modeMenu').classList.remove('open');
+    });
+
+    document.addEventListener('paste', (e) => {
+      const cell = e.target.closest && e.target.closest('.cell-text');
+      if (!cell) return;
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text/plain').replace(/\s*\n\s*/g, ' ');
+      document.execCommand('insertText', false, text);
+    });
+
+    // ---------- Search modal ----------
+    function openSearchModal() {
+      const modal = document.getElementById('searchModal');
+      modal.classList.add('open');
+      const input = document.getElementById('globalSearchInput');
+      input.value = '';
+      renderSearchResults('');
+      setTimeout(() => input.focus(), 50);
+    }
+    function closeSearchModal() {
+      document.getElementById('searchModal').classList.remove('open');
+    }
+    function renderSearchResults(q) {
+      const list = document.getElementById('searchResultsList');
+      const clean = q.trim().toLowerCase();
+      const matches = expenses.filter(e =>
+        String(e.item || '').toLowerCase().includes(clean) ||
+        String(e.category || '').toLowerCase().includes(clean) ||
+        String(e.date || '').includes(clean) ||
+        fmtDate(e.date).toLowerCase().includes(clean)
+      );
+      list.innerHTML = matches.map(m => `
+        <div class="search-result-item" onclick="closeSearchModal(); switchView('analysis');">
+          <div class="sr-left">
+            <span class="dot" style="background:${catColor(m.category)};width:8px;height:8px;border-radius:50%;flex-shrink:0;"></span>
+            <div style="min-width:0;">
+              <strong>${escapeHTML(m.item || 'Untitled')}</strong>
+              <div style="font-size:11.5px; color:var(--text-muted);">${fmtDate(m.date)} • ${escapeHTML(m.category)}</div>
+            </div>
+          </div>
+          <div style="font-weight:600;">₹${Number(m.amount).toLocaleString('en-IN')}</div>
+        </div>
+      `).join('') || `<div style="padding:18px; text-align:center; color:var(--text-muted); font-size:13px;">No matching transactions found.</div>`;
+    }
+
+    // ---------- Mobile sidebar default ----------
+    if (window.innerWidth <= 768) document.getElementById('sidebar').classList.add('collapsed');
+
+    // ---------- Start ----------
+    initDashboard();
+    initComposer();
+  </script>
+</body>
+</html>

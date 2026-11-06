@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in | Ossmo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text-main: #0f0f10;
+      --text-secondary: #52525b;
+      --text-muted: #71717a;
+      --text-light: #a1a1aa;
+      --border: #e4e4e7;
+      --border-hover: #d4d4d8;
+      --input-bg: #ffffff;
+      --btn-disabled: #939598;
+      --btn-active: #0f0f10;
+      --btn-active-hover: #27272a;
+      --pill-hover: #f8f8f9;
+      --error: #dc2626;
+      --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+      --shadow-focus: 0 0 0 3px rgba(15, 15, 16, 0.08);
+      --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 32px 20px;
+    }
+
+    /* Main Centered Wrapper */
+    .center-shell {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: auto 0;
+      transform: translateY(-1vh);
+    }
+
+    /* Top Minimal Brand Logo */
+    .top-brand {
+      margin-bottom: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text-main);
+      text-decoration: none;
+      user-select: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .top-brand:hover {
+      opacity: 0.8;
+    }
+
+    .top-brand-logo {
+      display: block;
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+    }
+
+    /* Centered Stage Container */
+    .stage-container {
+      width: 100%;
+      max-width: 360px;
+      transition: max-width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .stage-container.wide-stage {
+      max-width: 440px;
+    }
+
+    /* Screen Transitions */
+    .screen {
+      display: none;
+      animation: fadeSlide 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Headings */
+    .auth-title {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      text-align: center;
+      color: var(--text-main);
+      margin-bottom: 26px;
+    }
+
+    .question-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .question-step-badge {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: -0.01em;
+    }
+
+    .question-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .question-subtitle {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* Single Google Auth Button */
+    .google-btn {
+      width: 100%;
+      height: 42px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: var(--shadow-xs);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-main);
+      transition: var(--transition);
+    }
+
+    .google-btn:hover {
+      background: var(--pill-hover);
+      border-color: var(--border-hover);
+    }
+
+    .google-btn:active {
+      transform: scale(0.992);
+    }
+
+    .google-btn svg {
+      position: absolute;
+      left: 14px;
+      width: 17px;
+      height: 17px;
+    }
+
+    /* Subtle Divider */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: #f1f1f3;
+      margin: 22px 0;
+    }
+
+    /* Form Controls */
+    .field-group {
+      margin-bottom: 16px;
+    }
+
+    .field-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .field-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .forgot-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+
+    .forgot-link:hover {
+      color: var(--text-main);
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-prefix {
+      position: absolute;
+      left: 13px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .text-input {
+      width: 100%;
+      height: 42px;
+      padding: 0 13px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text-main);
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: var(--shadow-xs);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .text-input.with-prefix {
+      padding-left: 28px;
+    }
+
+    .text-input.with-eye {
+      padding-right: 40px;
+    }
+
+    .text-input::placeholder {
+      color: var(--text-light);
+    }
+
+    .text-input:hover {
+      border-color: var(--border-hover);
+    }
+
+    .text-input:focus {
+      border-color: var(--text-main);
+      box-shadow: var(--shadow-focus);
+    }
+
+    .eye-btn {
+      position: absolute;
+      right: 11px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      border-radius: 6px;
+      transition: color 0.15s ease;
+    }
+
+    .eye-btn:hover {
+      color: var(--text-main);
+    }
+
+    /* Primary Auth Submit Button */
+    .submit-btn {
+      width: 100%;
+      height: 42px;
+      margin-top: 6px;
+      border: none;
+      border-radius: 10px;
+      background: var(--btn-disabled);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .submit-btn.ready {
+      background: var(--btn-active);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .submit-btn.ready:hover {
+      background: var(--btn-active-hover);
+    }
+
+    .submit-btn.ready:active {
+      transform: scale(0.992);
+    }
+
+    .switch-auth-text {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .switch-auth-text button {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-main);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      margin-left: 3px;
+    }
+
+    /* Compact Pill-Shaped Selection Options */
+    .pills-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .pill-option {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8.5px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      box-shadow: var(--shadow-xs);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .pill-option:hover {
+      border-color: #b4b4bb;
+      background: var(--pill-hover);
+    }
+
+    .pill-option:active {
+      transform: scale(0.97);
+    }
+
+    .pill-option.selected {
+      background: var(--btn-active);
+      color: #ffffff;
+      border-color: var(--btn-active);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Compact Action Footer for Single-Question Steps */
+    .question-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid #f1f1f3;
+    }
+
+    .back-pill-btn {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .back-pill-btn:hover {
+      color: var(--text-main);
+      border-color: var(--border-hover);
+      background: var(--pill-hover);
+    }
+
+    .continue-pill-btn {
+      padding: 8.5px 22px;
+      border-radius: 999px;
+      border: none;
+      background: var(--btn-disabled);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .continue-pill-btn.ready {
+      background: var(--btn-active);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .continue-pill-btn.ready:hover {
+      background: var(--btn-active-hover);
+    }
+
+    .continue-pill-btn.ready:active {
+      transform: scale(0.98);
+    }
+
+    /* Minimal Progress Segments */
+    .step-dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .dot {
+      width: 18px;
+      height: 3px;
+      border-radius: 99px;
+      background: #e4e4e7;
+      transition: var(--transition);
+    }
+
+    .dot.active {
+      background: var(--text-main);
+    }
+
+    /* Error Text */
+    .error-text {
+      font-size: 12px;
+      color: var(--error);
+      margin-top: 8px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .error-text.show {
+      display: block;
+    }
+
+    /* Redirect Loader */
+    .loader-box {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #e4e4e7;
+      border-top-color: #0f0f10;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-height: 680px) {
+      .center-shell {
+        transform: none;
+      }
+      .top-brand {
+        margin-bottom: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="center-shell">
+    <!-- Top Minimal Brand Logo -->
+    <a href="index.html" class="top-brand">
+      <img class="top-brand-logo" src="logo.svg" alt="" />
+      <span>Ossmo</span>
+    </a>
+
+    <main class="stage-container" id="stageContainer">
+
+      <!-- ==========================================
+           SCREEN 0: AUTH (Centered ElevenLabs Style)
+           ========================================== -->
+      <section class="screen active" id="screen-auth">
+        <h1 class="auth-title" id="authHeading">Welcome back</h1>
+
+        <!-- Only Google Auth Option -->
+        <button type="button" class="google-btn" onclick="handleGoogleAuth()">
+          <svg viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/>
+          </svg>
+          <span id="googleBtnText">Sign in with Google</span>
+        </button>
+
+        <div class="divider"></div>
+
+        <!-- Email & Password Form -->
+        <div class="field-group">
+          <div class="field-label-row">
+            <label class="field-label" for="authEmail">Email</label>
+          </div>
+          <div class="input-wrap">
+            <input type="email" id="authEmail" class="text-input" autocomplete="email" oninput="validateAuthInputs()" />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label-row">
+            <label class="field-label" for="authPassword">Password</label>
+            <a class="forgot-link" id="forgotLink">Forgot your password?</a>
+          </div>
+          <div class="input-wrap">
+            <input type="password" id="authPassword" class="text-input with-eye" autocomplete="current-password" oninput="validateAuthInputs()" />
+            <button type="button" class="eye-btn" onclick="togglePassVisibility()" aria-label="Toggle password">
+              <svg id="eyeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <p class="error-text" id="authError">Please enter a valid email and password (min 6 characters).</p>
+
+        <button type="button" class="submit-btn" id="authSubmitBtn" onclick="submitAuthForm()">
+          Sign in
+        </button>
+
+        <div class="switch-auth-text" id="switchAuthPrompt">
+          Don't have an account? <button type="button" onclick="toggleSignUpMode()">Sign up</button>
+        </div>
+      </section>
+
+
+      <!-- ==========================================
+           QUESTION 1: FULL NAME (Single Question)
+           ========================================== -->
+      <section class="screen" id="screen-q1">
+        <div class="question-header">
+          <span class="question-step-badge">Step 1 of 4</span>
+          <div class="step-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+
+        <h2 class="question-title">What should we call you?</h2>
+        <p class="question-subtitle">Your name will personalize your Ossmo AI financial assistant.</p>
+
+        <div class="field-group">
+          <div class="input-wrap">
+            <input type="text" id="userNameInput" class="text-input" placeholder="Enter your full name" oninput="checkNameStep()" />
+          </div>
+          <p class="error-text" id="q1Error">Please enter your name to continue.</p>
+        </div>
+
+        <div class="question-footer">
+          <button type="button" class="back-pill-btn" onclick="goToScreen('screen-auth', false)">Back</button>
+          <button type="button" class="continue-pill-btn" id="q1ContinueBtn" onclick="nextFromName()">
+            Continue
+          </button>
+        </div>
+      </section>
+
+
+      <!-- ==========================================
+           QUESTION 2: AGE (Single Question + Pills)
+           ========================================== -->
+      <section class="screen" id="screen-q2">
+        <div class="question-header">
+          <span class="question-step-badge">Step 2 of 4</span>
+          <div class="step-dots">
+            <span class="dot active"></span>
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+
+        <h2 class="question-title">How old are you?</h2>
+        <p class="question-subtitle">Helps Ossmo tailor risk profiles and savings benchmarks for your age.</p>
+
+        <div class="pills-container" id="agePills">
+          <button type="button" class="pill-option" onclick="selectAgePill(this, 'Under 20')">Under 20</button>
+          <button type="button" class="pill-option" onclick="selectAgePill(this, '20 – 24')">20 – 24</button>
+          <button type="button" class="pill-option" onclick="selectAgePill(this, '25 – 30')">25 – 30</button>
+          <button type="button" class="pill-option" onclick="selectAgePill(this, '31 – 40')">31 – 40</button>
+          <button type="button" class="pill-option" onclick="selectAgePill(this, '41 – 50')">41 – 50</button>
+          <button type="button" class="pill-option" onclick="selectAgePill(this, '50+')">50+</button>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label-row">
+            <label class="field-label" for="exactAgeInput">Or enter exact age (optional)</label>
+          </div>
+          <div class="input-wrap">
+            <input type="number" id="exactAgeInput" class="text-input" placeholder="e.g. 23" min="13" max="100" oninput="handleExactAge(this.value)" />
+          </div>
+          <p class="error-text" id="q2Error">Please select an age group or enter your age.</p>
+        </div>
+
+        <div class="question-footer">
+          <button type="button" class="back-pill-btn" onclick="goToScreen('screen-q1', true)">Back</button>
+          <button type="button" class="continue-pill-btn" id="q2ContinueBtn" onclick="nextFromAge()">
+            Continue
+          </button>
+        </div>
+      </section>
+
+
+      <!-- ==========================================
+           QUESTION 3: WORK / PROFESSION (Pills)
+           ========================================== -->
+      <section class="screen" id="screen-q3">
+        <div class="question-header">
+          <span class="question-step-badge">Step 3 of 4</span>
+          <div class="step-dots">
+            <span class="dot active"></span>
+            <span class="dot active"></span>
+            <span class="dot active"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+
+        <h2 class="question-title">What best describes your work?</h2>
+        <p class="question-subtitle">Select the option that best matches what you do.</p>
+
+        <div class="pills-container" id="workPills">
+          <button type="button" class="pill-option" onclick="selectWorkPill(this, 'Software & Tech')">Software & Tech</button>
+          <button type="button" class="pill-option" onclick="selectWorkPill(this, 'Salaried Professional')">Salaried Professional</button>
+          <button type="button" class="pill-option" onclick="selectWorkPill(this, 'Freelancer / Creator')">Freelancer / Creator</button>
+          <button type="button" class="pill-option" onclick="selectWorkPill(this, 'Founder / Business Owner')">Founder / Business</button>
+          <button type="button" class="pill-option" onclick="selectWorkPill(this, 'Finance & Trading')">Finance & Trading</button>
+          <button type="button" class="pill-option" onclick="selectWorkPill(this, 'Design & Product')">Design & Product</button>
+          <button type="button" class="pill-option" onclick="selectWorkPill(this, 'Student / Intern')">Student / Intern</button>
+          <button type="button" class="pill-option" onclick="selectWorkPill(this, 'Other')">Other</button>
+        </div>
+
+        <p class="error-text" id="q3Error">Please choose an option to continue.</p>
+
+        <div class="question-footer">
+          <button type="button" class="back-pill-btn" onclick="goToScreen('screen-q2', true)">Back</button>
+          <button type="button" class="continue-pill-btn" id="q3ContinueBtn" onclick="nextFromWork()">
+            Continue
+          </button>
+        </div>
+      </section>
+
+
+      <!-- ==========================================
+           QUESTION 4: MONTHLY INCOME / SALARY (Pills)
+           ========================================== -->
+      <section class="screen" id="screen-q4">
+        <div class="question-header">
+          <span class="question-step-badge">Step 4 of 4</span>
+          <div class="step-dots">
+            <span class="dot active"></span>
+            <span class="dot active"></span>
+            <span class="dot active"></span>
+            <span class="dot active"></span>
+          </div>
+        </div>
+
+        <h2 class="question-title">What is your monthly income?</h2>
+        <p class="question-subtitle">Ossmo AI uses this to structure your daily expense limits and savings goals.</p>
+
+        <div class="pills-container" id="incomePills">
+          <button type="button" class="pill-option" onclick="selectIncomePill(this, '20000')">Under ₹25,000</button>
+          <button type="button" class="pill-option" onclick="selectIncomePill(this, '35000')">₹25,000 – ₹50,000</button>
+          <button type="button" class="pill-option" onclick="selectIncomePill(this, '75000')">₹50,000 – ₹1,00,000</button>
+          <button type="button" class="pill-option" onclick="selectIncomePill(this, '150000')">₹1,00,000 – ₹2,00,000</button>
+          <button type="button" class="pill-option" onclick="selectIncomePill(this, '250000')">₹2,00,000+</button>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label-row">
+            <label class="field-label" for="exactIncomeInput">Or enter exact monthly salary / income</label>
+          </div>
+          <div class="input-wrap">
+            <span class="input-prefix">₹</span>
+            <input type="number" id="exactIncomeInput" class="text-input with-prefix" placeholder="e.g. 65000" min="0" oninput="handleExactIncome(this.value)" />
+          </div>
+          <p class="error-text" id="q4Error">Please select an income bracket or enter an amount.</p>
+        </div>
+
+        <div class="question-footer">
+          <button type="button" class="back-pill-btn" onclick="goToScreen('screen-q3', true)">Back</button>
+          <button type="button" class="continue-pill-btn" id="q4ContinueBtn" onclick="finishOnboarding()">
+            Continue
+          </button>
+        </div>
+      </section>
+
+
+      <!-- ==========================================
+           REDIRECT LOADER SCREEN
+           ========================================== -->
+      <section class="screen" id="screen-loading">
+        <div class="loader-box">
+          <div class="spinner"></div>
+          <h2 class="question-title" style="font-size: 18px;">Setting up your Ossmo workspace</h2>
+          <p class="question-subtitle" style="margin-bottom: 0;">Redirecting to dashboard.html...</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+
+  <!-- API config — edit config.js to point to your Cloudflare Worker URL -->
+  <script src="config.js"></script>
+  <script>
+    // ============================================================
+    // OSSMO AI — Auth + Onboarding
+    // All data goes through the Cloudflare Worker API.
+    // ============================================================
+
+    let isSignUp = false;
+    let authLoading = false;
+
+    const userProfile = {
+      authMethod: 'email', email: '', name: '', age: '', profession: '', monthlyIncome: '',
+      createdAt: new Date().toISOString()
+    };
+
+    // --- On load: already authenticated? redirect to dashboard ---
+    (async function checkSession() {
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' });
+        const data = await res.json();
+        if (data.user && data.user.isOnboarded) {
+          window.location.href = 'dashboard.html';
+        }
+      } catch (err) { /* not authenticated, stay here */ }
+    })();
+
+    function toggleSignUpMode() {
+      isSignUp = !isSignUp;
+      const heading = document.getElementById('authHeading');
+      const googleText = document.getElementById('googleBtnText');
+      const submitBtn = document.getElementById('authSubmitBtn');
+      const forgotLink = document.getElementById('forgotLink');
+      const switchPrompt = document.getElementById('switchAuthPrompt');
+      document.getElementById('authError').classList.remove('show');
+      if (isSignUp) {
+        heading.textContent = 'Create an account';
+        googleText.textContent = 'Sign up with Google';
+        submitBtn.textContent = 'Sign up';
+        forgotLink.style.display = 'none';
+        switchPrompt.innerHTML = 'Already have an account? <button type="button" onclick="toggleSignUpMode()">Sign in</button>';
+      } else {
+        heading.textContent = 'Welcome back';
+        googleText.textContent = 'Sign in with Google';
+        submitBtn.textContent = 'Sign in';
+        forgotLink.style.display = 'inline';
+        switchPrompt.innerHTML = 'Don\'t have an account? <button type="button" onclick="toggleSignUpMode()">Sign up</button>';
+      }
+    }
+
+    function togglePassVisibility() {
+      const passInput = document.getElementById('authPassword');
+      const eyeIcon = document.getElementById('eyeIcon');
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+      } else {
+        passInput.type = 'password';
+        eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+      }
+    }
+
+    function validateAuthInputs() {
+      const email = document.getElementById('authEmail').value.trim();
+      const pass = document.getElementById('authPassword').value;
+      const btn = document.getElementById('authSubmitBtn');
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && pass.length >= 6;
+      btn.classList.toggle('ready', valid);
+      if (valid) document.getElementById('authError').classList.remove('show');
+      return valid;
+    }
+
+    function showAuthError(msg) {
+      const el = document.getElementById('authError');
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+
+    function handleGoogleAuth() {
+      showAuthError('Google OAuth coming soon. Please use email signup above.');
+    }
+
+    async function submitAuthForm() {
+      if (!validateAuthInputs() || authLoading) {
+        if (!validateAuthInputs()) document.getElementById('authError').classList.add('show');
+        return;
+      }
+      authLoading = true;
+      const btn = document.getElementById('authSubmitBtn');
+      const originalText = btn.textContent;
+      btn.textContent = 'Please wait…';
+      btn.disabled = true;
+
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+      const endpoint = isSignUp ? 'signup' : 'signin';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showAuthError(data.error || 'Something went wrong');
+          btn.textContent = originalText;
+          btn.disabled = false;
+          authLoading = false;
+          return;
+        }
+        userProfile.authMethod = 'email';
+        userProfile.email = email;
+        if (data.user.isOnboarded) {
+          window.location.href = 'dashboard.html';
+          return;
+        }
+        goToScreen('screen-q1', true);
+      } catch (err) {
+        showAuthError('Network error. Check API URL in config.js');
+        btn.textContent = originalText;
+        btn.disabled = false;
+        authLoading = false;
+      }
+    }
+
+    function goToScreen(screenId, widerContainer) {
+      const stage = document.getElementById('stageContainer');
+      stage.classList.toggle('wide-stage', Boolean(widerContainer));
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+      if (screenId === 'screen-q1') {
+        setTimeout(() => document.getElementById('userNameInput').focus(), 100);
+      }
+    }
+
+    function checkNameStep() {
+      const val = document.getElementById('userNameInput').value.trim();
+      const btn = document.getElementById('q1ContinueBtn');
+      btn.classList.toggle('ready', val.length >= 2);
+      if (val.length >= 2) document.getElementById('q1Error').classList.remove('show');
+    }
+
+    function nextFromName() {
+      const val = document.getElementById('userNameInput').value.trim();
+      if (val.length < 2) { document.getElementById('q1Error').classList.add('show'); return; }
+      userProfile.name = val;
+      goToScreen('screen-q2', true);
+    }
+
+    function selectAgePill(pillEl, ageValue) {
+      document.querySelectorAll('#agePills .pill-option').forEach(p => p.classList.remove('selected'));
+      pillEl.classList.add('selected');
+      document.getElementById('exactAgeInput').value = '';
+      userProfile.age = ageValue;
+      document.getElementById('q2ContinueBtn').classList.add('ready');
+      document.getElementById('q2Error').classList.remove('show');
+    }
+
+    function handleExactAge(val) {
+      document.querySelectorAll('#agePills .pill-option').forEach(p => p.classList.remove('selected'));
+      if (val && Number(val) >= 13 && Number(val) <= 100) {
+        userProfile.age = String(val);
+        document.getElementById('q2ContinueBtn').classList.add('ready');
+        document.getElementById('q2Error').classList.remove('show');
+      } else {
+        userProfile.age = '';
+        document.getElementById('q2ContinueBtn').classList.remove('ready');
+      }
+    }
+
+    function nextFromAge() {
+      if (!userProfile.age) { document.getElementById('q2Error').classList.add('show'); return; }
+      goToScreen('screen-q3', true);
+    }
+
+    function selectWorkPill(pillEl, workValue) {
+      document.querySelectorAll('#workPills .pill-option').forEach(p => p.classList.remove('selected'));
+      pillEl.classList.add('selected');
+      userProfile.profession = workValue;
+      document.getElementById('q3ContinueBtn').classList.add('ready');
+      document.getElementById('q3Error').classList.remove('show');
+    }
+
+    function nextFromWork() {
+      if (!userProfile.profession) { document.getElementById('q3Error').classList.add('show'); return; }
+      goToScreen('screen-q4', true);
+    }
+
+    function selectIncomePill(pillEl, incomeValue) {
+      document.querySelectorAll('#incomePills .pill-option').forEach(p => p.classList.remove('selected'));
+      pillEl.classList.add('selected');
+      document.getElementById('exactIncomeInput').value = incomeValue;
+      userProfile.monthlyIncome = incomeValue;
+      document.getElementById('q4ContinueBtn').classList.add('ready');
+      document.getElementById('q4Error').classList.remove('show');
+    }
+
+    function handleExactIncome(val) {
+      document.querySelectorAll('#incomePills .pill-option').forEach(p => p.classList.remove('selected'));
+      if (val !== '' && Number(val) >= 0) {
+        userProfile.monthlyIncome = String(val);
+        document.getElementById('q4ContinueBtn').classList.add('ready');
+        document.getElementById('q4Error').classList.remove('show');
+      } else {
+        userProfile.monthlyIncome = '';
+        document.getElementById('q4ContinueBtn').classList.remove('ready');
+      }
+    }
+
+    async function finishOnboarding() {
+      if (!userProfile.monthlyIncome) { document.getElementById('q4Error').classList.add('show'); return; }
+      const btn = document.getElementById('q4ContinueBtn');
+      btn.textContent = 'Saving…';
+      btn.disabled = true;
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/onboarding`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            name: userProfile.name,
+            age: userProfile.age,
+            profession: userProfile.profession,
+            monthlyIncome: Number(userProfile.monthlyIncome),
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          document.getElementById('q4Error').textContent = data.error || 'Failed to save profile';
+          document.getElementById('q4Error').classList.add('show');
+          btn.textContent = 'Start using Ossmo';
+          btn.disabled = false;
+          return;
+        }
+        goToScreen('screen-loading', false);
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1100);
+      } catch (err) {
+        document.getElementById('q4Error').textContent = 'Network error. Check API URL in config.js';
+        document.getElementById('q4Error').classList.add('show');
+        btn.textContent = 'Start using Ossmo';
+        btn.disabled = false;
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      const activeId = document.querySelector('.screen.active')?.id;
+      if (activeId === 'screen-auth') submitAuthForm();
+      else if (activeId === 'screen-q1') nextFromName();
+      else if (activeId === 'screen-q2') nextFromAge();
+      else if (activeId === 'screen-q3') nextFromWork();
+      else if (activeId === 'screen-q4') finishOnboarding();
+    });
+  </script>
+</body>
+</html>
